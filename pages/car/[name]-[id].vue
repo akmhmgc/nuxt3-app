@@ -5,7 +5,6 @@ useHead({
   title: route.params.name
 })
 
-
 definePageMeta({
   layout: "custom"
 })
@@ -16,9 +15,16 @@ const car = computed(() => {
   })
 })
 
+if (!car.value) {
+  throw createError({
+    statusCode: 404,
+    message: `Car with id of ${route.params.id} does not exist`
+  })
+}
+
 </script>
 <template>
-  <div v-if="car">
+  <div>
     <CarDetailHero :car="car" />
     <CarDetailAttributes :features="car.features" />
     <CarDetailDescription :description="car.description" />
