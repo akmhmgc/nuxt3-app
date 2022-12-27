@@ -5,6 +5,7 @@ const modal = ref({
   location: false,
   price: false,
 })
+const { makes } = useCars();
 
 const updateModal = (key) => {
   modal.value[key] = !modal.value[key]
@@ -13,7 +14,7 @@ const route = useRoute()
 
 const onChangeLocation = () => {
   if (!city.value) return;
-  if (!isNaN(parseInt(city.value))){
+  if (!isNaN(parseInt(city.value))) {
     throw createError({
       statusCode: 400,
       message: "Invalid city format"
@@ -22,9 +23,15 @@ const onChangeLocation = () => {
   updateModal('location');
   navigateTo(`/city/${city.value}/car/${route.params.make}`);
 }
+
+const onChangeMake = (make)=>{
+  updateModal('make');
+  navigateTo(`/city/${route.params.city}/car/${make}`);
+}
 </script>
 <template>
   <div class="shadow border w-64 mr-10 z-30 h-[190px]">
+    <!-- LOCATION START -->
     <div class="p-5 flex justify-between relative cursor-pointer border-b">
       <h3>Location</h3>
       <h3 @click="updateModal('location')" class="text-blue-400 capitalize">{{ route.params.city }}</h3>
@@ -35,11 +42,20 @@ const onChangeLocation = () => {
         </button>
       </div>
     </div>
+    <!-- LOCATION END -->
 
+    <!-- MAKE START -->
     <div class="p-5 flex justify-between relative cursor-pointer border-b">
       <h3>Make</h3>
-      <h3 class="text-blue-400 capitalize">Toyota</h3>
+      <h3 @click="updateModal('make')" class="text-blue-400 capitalize">{{ route.params.make }}</h3>
+      <div v-if="modal.make"
+        class="absolute border shadow left-56 p-5 top-1 -m-1 w-[600px] flex justify-between flex-wrap bg-white">
+        <h4 @click="onChangeMake(make)" v-for="make in makes" :key="make" class="w-1/3">
+          {{ make || "Any"}}
+        </h4>
+      </div>
     </div>
+    <!-- MAKE END -->
 
     <div class="p-5 flex justify-between relative cursor-pointer border-b">
       <h3>Price</h3>

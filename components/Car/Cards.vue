@@ -15,6 +15,7 @@ const handleFavorite = (id) => {
 </script>
 <template>
   <div class="w-full">
+  {{ makes }}
     <ClientOnly>
       <CarCard
         v-for="car in cars"
