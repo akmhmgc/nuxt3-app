@@ -1,5 +1,9 @@
 <script setup>
 const city = ref("")
+const priceRange = ref({
+  min: "",
+  max: "",
+})
 const modal = ref({
   make: false,
   location: false,
@@ -11,6 +15,7 @@ const updateModal = (key) => {
   modal.value[key] = !modal.value[key]
 }
 const route = useRoute()
+const router = useRouter()
 
 const onChangeLocation = () => {
   if (!city.value) return;
@@ -24,10 +29,34 @@ const onChangeLocation = () => {
   navigateTo(`/city/${city.value}/car/${route.params.make}`);
 }
 
-const onChangeMake = (make)=>{
+const onChangeMake = (make) => {
   updateModal('make');
   navigateTo(`/city/${route.params.city}/car/${make}`);
 }
+
+const onChangePrice = () => {
+  updateModal('price');
+
+  if (priceRange.max && priceRange.min) {
+    if (priceRange.min > priceRange.max) return;
+  }
+  router.push({
+    query: {
+      minPrice: priceRange.value.min,
+      maxPrice: priceRange.value.max,
+    }
+  })
+}
+
+const priceRangeText = computed(() => {
+  const minPrice = route.query.minPrice;
+  const maxPrice = route.query.maxPrice;
+
+  if (!minPrice && !maxPrice) return "Any"
+  if (!minPrice && maxPrice) return `< $${maxPrice}`
+  if (minPrice && !maxPrice) return `> $${minPrice}`
+  return `$${minPrice} - $${maxPrice}`
+})
 </script>
 <template>
   <div class="shadow border w-64 mr-10 z-30 h-[190px]">
@@ -51,15 +80,22 @@ const onChangeMake = (make)=>{
       <div v-if="modal.make"
         class="absolute border shadow left-56 p-5 top-1 -m-1 w-[600px] flex justify-between flex-wrap bg-white">
         <h4 @click="onChangeMake(make)" v-for="make in makes" :key="make" class="w-1/3">
-          {{ make || "Any"}}
+          {{ make || "Any" }}
         </h4>
       </div>
     </div>
     <!-- MAKE END -->
 
+    <!-- PRICE START -->
     <div class="p-5 flex justify-between relative cursor-pointer border-b">
       <h3>Price</h3>
-      <h3 class="text-blue-400 capitalize"></h3>
+      <h3 @click="updateModal('price')" class="text-blue-400 capitalize">{{ priceRangeText }}</h3>
+      <div class="absolute border shadow left-56 p-5 top-1 -m-1 bg-white" v-if="modal.price">
+        <input class="border p-1 rounded" type="number" placeholder="Min" v-model="priceRange.min">
+        <input class="border p-1 rounded mt-1" type="number" placeholder="Max" v-model="priceRange.max">
+        <button @click="onChangePrice" class="bg-blue-400 w-full mt-2 rounded text-white p-1">Apply</button>
+      </div>
     </div>
+    <!-- PRICE END -->
   </div>
 </template>
