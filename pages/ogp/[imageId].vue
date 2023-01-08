@@ -8,7 +8,7 @@ const url = route.query.url;
 useHead({
   title: 'OgpTest',
   meta: [
-    { property: 'og:image', content: parseInt(imageId) > 10 ? heartFilled : heartOutline },
+    { property: 'og:image', content: 'https://images.keizai.biz/abeno_keizai/headline/1551938569_photo.jpg' },
   ]
 })
 
